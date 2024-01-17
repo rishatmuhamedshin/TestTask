@@ -1,0 +1,72 @@
+Клиент - 1:М - Заказ
+Заказ - 1:М - Послыка
+Посылка 1:1 - типПосылки
+Послыка - 1:1 - PostOffice
+Посылка - 1:1 - Статус
+Заказ - 1:М - Промежуточные отделения
+
+
+create table Person
+(
+    id         serial primary key,
+    name       varchar(100) not null,
+    surname    varchar(100) not null,
+    patronymic varchar(100) not null,
+    address    varchar(100) not null,
+    email      varchar(100) not null
+);
+
+create table PostOffice
+(
+    id      serial primary key,
+    name    varchar(100) not null,
+    address varchar(100) not null,
+    distanceFromMoscow integer not null
+);
+
+create table orders
+(
+    id                  serial primary key,
+    id_person integer not null,
+    address             varchar(100) not null,
+    dateCreation        date         not null,
+    datePossibleArrival date         not null,
+    status              varchar(200) not null check (
+        status in (
+                   'done', 'delivery', 'in progress'
+            )
+        ),
+    CONSTRAINT person_fk FOREIGN KEY (id_person) REFERENCES Person (id)
+
+
+);
+
+create table Postage
+(
+    id             serial primary key,
+    indexRecepient integer      not null,
+    id_orders       integer      NOT NULL,
+    type           varchar(200) not null check (
+        type in (
+                 'LETTER', 'PARCEl', 'PACKAGE', 'POSTCARD'
+            )
+        ),
+    CONSTRAINT orders_fk FOREIGN KEY (id_orders) REFERENCES "order" (id)
+);
+
+create table PostOfficesOrder
+(
+    id_orders     INTEGER NOT NULL REFERENCES orders,
+    id_postOffice INTEGER NOT NULL REFERENCES PostOffice,
+    dateArrival   date    not null,
+    dateDeparture  date    not null
+)
+
+
+
+
+insert into post_office(name,address,distance_from_moscow) values ('Казань Фаст','Профсоюзная 44',816);
+insert into post_office(name,address,distance_from_moscow) values ('МоскваЭкспресс','Ленина 123',0);
+insert into post_office(name,address,distance_from_moscow) values ('Калининград','Ленинский проспект 110',1089);
+insert into post_office(name,address,distance_from_moscow) values ('Ростов','Береговая 13',193);
+
